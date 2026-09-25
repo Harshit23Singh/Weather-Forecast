@@ -9,24 +9,27 @@ import AgroAdvisory from './pages/AgroAdvisory';
 import RiskAlerts from './pages/RiskAlerts';
 import HistoricalAnalysis from './pages/HistoricalAnalysis';
 import Methodology from './pages/Methodology';
+import { WeatherProvider } from './context/WeatherContext';
 
 function App() {
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path="/" element={<Layout />}>
-          <Route index element={<Dashboard />} />
-          <Route path="explorer" element={<Explorer />} />
-          <Route path="downscale" element={<DownscaleEngine />} />
-          <Route path="map" element={<WeatherMap />} />
-          <Route path="crop-intelligence" element={<CropIntelligence />} />
-          <Route path="advisory" element={<AgroAdvisory />} />
-          <Route path="alerts" element={<RiskAlerts />} />
-          <Route path="historical" element={<HistoricalAnalysis />} />
-          <Route path="methodology" element={<Methodology />} />
-        </Route>
-      </Routes>
-    </BrowserRouter>
+    <WeatherProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout />}>
+            <Route index element={<Dashboard />} />
+            <Route path="explorer" element={<Explorer />} />
+            <Route path="downscale" element={<DownscaleEngine />} />
+            <Route path="map" element={<WeatherMap />} />
+            <Route path="crop-intelligence" element={<CropIntelligence />} />
+            <Route path="advisory" element={<AgroAdvisory />} />
+            <Route path="alerts" element={<RiskAlerts />} />
+            <Route path="historical" element={<HistoricalAnalysis />} />
+            <Route path="methodology" element={<Methodology />} />
+          </Route>
+        </Routes>
+      </BrowserRouter>
+    </WeatherProvider>
   );
 }
 

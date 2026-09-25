@@ -9,8 +9,15 @@ import {
   AlertTriangle, 
   LineChart, 
   BookOpen,
-  CloudSunRain
+  CloudSunRain,
+  X,
+  ShieldCheck
 } from 'lucide-react';
+
+interface SidebarProps {
+  isMobile?: boolean;
+  onClose?: () => void;
+}
 
 const navItems = [
   { path: '/', icon: LayoutDashboard, label: 'Overview' },
@@ -24,41 +31,69 @@ const navItems = [
   { path: '/methodology', icon: BookOpen, label: 'Methodology' },
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
   return (
-    <aside className="w-64 bg-white border-r border-slate-200 hidden md:flex flex-col shadow-sm">
-      <div className="h-16 flex items-center px-6 border-b border-slate-100">
-        <div className="flex items-center gap-2 text-primary">
-          <CloudSunRain className="w-8 h-8" />
-          <span className="font-bold text-xl tracking-tight text-slate-800">Mausam<span className="text-primary">Setu</span></span>
+    <aside className={`bg-white border-r border-slate-200 flex flex-col shadow-sm ${
+      isMobile ? 'w-72 h-full' : 'w-64 hidden md:flex h-screen'
+    }`}>
+      <div className="h-16 flex items-center justify-between px-6 border-b border-slate-100 shrink-0">
+        <div className="flex items-center gap-2.5 text-primary">
+          <div className="bg-primary/10 p-1.5 rounded-xl">
+            <CloudSunRain className="w-6 h-6 text-primary" />
+          </div>
+          <span className="font-bold text-lg tracking-tight text-slate-900">
+            Gram <span className="text-primary font-black">Mausam AI</span>
+          </span>
         </div>
+
+        {isMobile && (
+          <button 
+            onClick={onClose}
+            className="p-1.5 rounded-xl hover:bg-slate-100 text-slate-500 hover:text-slate-800 transition-colors"
+          >
+            <X className="w-5 h-5" />
+          </button>
+        )}
       </div>
       
-      <div className="flex-1 overflow-y-auto py-4">
-        <nav className="space-y-1 px-3">
+      <div className="flex-1 overflow-y-auto py-4 px-3">
+        <div className="mb-2 px-3">
+          <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Navigation</span>
+        </div>
+        <nav className="space-y-1">
           {navItems.map((item) => (
             <NavLink
               key={item.path}
               to={item.path}
+              onClick={() => {
+                if (isMobile && onClose) {
+                  onClose();
+                }
+              }}
               className={({ isActive }) =>
-                `flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                `flex items-center gap-3 px-3.5 py-2.5 rounded-xl text-sm font-semibold transition-all ${
                   isActive
-                    ? 'bg-primary/10 text-primary'
-                    : 'text-slate-600 hover:bg-slate-50 hover:text-slate-900'
+                    ? 'bg-primary text-white shadow-md shadow-primary/20'
+                    : 'text-slate-600 hover:bg-slate-100/80 hover:text-slate-900'
                 }`
               }
             >
-              <item.icon className="w-5 h-5" />
-              {item.label}
+              <item.icon className="w-4 h-4 shrink-0" />
+              <span>{item.label}</span>
             </NavLink>
           ))}
         </nav>
       </div>
       
-      <div className="p-4 border-t border-slate-100">
-        <div className="bg-slate-50 rounded-lg p-3 text-xs text-slate-500">
-          <p className="font-semibold text-slate-700 mb-1">SIH Prototype</p>
-          <p>Ministry of Earth Sciences & India Meteorological Department</p>
+      <div className="p-4 border-t border-slate-100 shrink-0">
+        <div className="bg-slate-50 rounded-2xl p-3.5 border border-slate-100 space-y-1">
+          <div className="flex items-center gap-2 text-slate-800 font-bold text-xs">
+            <ShieldCheck className="w-4 h-4 text-primary" />
+            <span>Gram Mausam AI v2.4</span>
+          </div>
+          <p className="text-[11px] text-slate-500 leading-tight">
+            High-Resolution Agro-Meteorological & Spatial Downscaling System
+          </p>
         </div>
       </div>
     </aside>

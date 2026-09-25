@@ -5,10 +5,17 @@ import {
   Droplets, 
   Eye, 
   CloudLightning,
-  MapPin,
-  TrendingUp,
-  AlertCircle,
-  Cpu
+  MapPin, 
+  TrendingUp, 
+  AlertCircle, 
+  Sun,
+  CloudSun,
+  Cloud,
+  CheckCircle2,
+  RefreshCw,
+  Gauge,
+  ArrowRight,
+  Layers
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -19,32 +26,104 @@ import {
   Tooltip, 
   ResponsiveContainer 
 } from 'recharts';
-
-const forecastData = [
-  { time: '00:00', temp: 24, rain: 0 },
-  { time: '04:00', temp: 22, rain: 0 },
-  { time: '08:00', temp: 26, rain: 2 },
-  { time: '12:00', temp: 31, rain: 5 },
-  { time: '16:00', temp: 29, rain: 12 },
-  { time: '20:00', temp: 26, rain: 4 },
-];
+import { Link } from 'react-router-dom';
+import { useWeather } from '../context/WeatherContext';
+import LeafletMap, { type MapMarker, type MapCircle } from '../components/map/LeafletMap';
 
 export default function Dashboard() {
+  const { location, weather, isLoading, error, refreshWeather } = useWeather();
+
+  const current = weather?.current;
+  const hourly = weather?.hourly || [];
+  const primaryAdvisory = weather?.advisories?.[0];
+
+  // Helper to render weather icon
+  const renderWeatherIcon = (code: number = 0, className: string = 'w-12 h-12') => {
+    if (code === 0) return <Sun className={className} />;
+    if (code === 1 || code === 2) return <CloudSun className={className} />;
+    if (code === 3 || code === 45 || code === 48) return <Cloud className={className} />;
+    if (code >= 51 && code <= 82) return <CloudRain className={className} />;
+    if (code >= 95) return <CloudLightning className={className} />;
+    return <CloudSun className={className} />;
+  };
+
+  const mapMarkers: MapMarker[] = [
+    {
+      lat: location.lat,
+      lng: location.lng,
+      popupTitle: location.panchayat || location.name,
+      popupContent: `Temp: <b>${current?.temperature ?? '--'}°C</b> (${current?.weatherDescription || 'Live'})<br/>Rain: <b>${current?.rainfall ?? 0} mm</b> | Wind: <b>${current?.windSpeed ?? 0} km/h</b>`,
+      isCenter: true
+    }
+  ];
+
+  const mapCircles: MapCircle[] = [
+    {
+      lat: location.lat,
+      lng: location.lng,
+      radius: 1800,
+      color: '#10b981',
+      fillColor: '#10b981',
+      fillOpacity: 0.18
+    }
+  ];
+
+  if (isLoading && !weather) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] gap-4">
+        <div className="relative">
+          <RefreshCw className="w-12 h-12 text-primary animate-spin" />
+        </div>
+        <p className="text-slate-600 font-semibold text-lg">Fetching live satellite & NWP weather data...</p>
+        <p className="text-slate-400 text-sm">Connecting to Open-Meteo High-Resolution Ensemble Models</p>
+      </div>
+    );
+  }
+
+  if (error && !weather) {
+    return (
+      <div className="max-w-md mx-auto my-16 bg-white p-8 rounded-3xl border border-red-200 text-center shadow-lg">
+        <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertCircle className="w-8 h-8" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-800 mb-2">Weather Stream Unavailable</h2>
+        <p className="text-slate-600 text-sm mb-6">{error}</p>
+        <button
+          onClick={() => refreshWeather()}
+          className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-2.5 rounded-xl shadow transition-all"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6 max-w-7xl mx-auto pb-10">
+      {/* Header Banner */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Dashboard Overview</h1>
-          <p className="text-slate-500 mt-1">Hyperlocal Weather Intelligence & Agro-Meteorological Advisory</p>
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold text-slate-800 tracking-tight">Dashboard Overview</h1>
+            <span className="bg-emerald-100 text-emerald-700 text-xs font-bold px-2.5 py-1 rounded-full uppercase tracking-wider flex items-center gap-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              Live Synoptic
+            </span>
+          </div>
+          <p className="text-slate-500 mt-1">
+            Hyperlocal Weather Intelligence & Agro-Meteorological Advisory • {location.state || 'India'}
+          </p>
         </div>
         
-        <div className="bg-white px-4 py-2 rounded-xl shadow-sm border border-slate-200 flex items-center gap-3">
-          <div className="bg-primary/10 p-2 rounded-lg">
+        <div className="bg-white px-4 py-2.5 rounded-2xl shadow-sm border border-slate-200 flex items-center gap-3">
+          <div className="bg-primary/10 p-2.5 rounded-xl">
             <MapPin className="w-5 h-5 text-primary" />
           </div>
           <div>
-            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Selected Panchayat</p>
-            <p className="font-semibold text-slate-800">Aima, Malihabad</p>
+            <p className="text-xs text-slate-500 font-medium uppercase tracking-wider">Active Micro-Grid</p>
+            <p className="font-bold text-slate-800">
+              {location.panchayat || location.name}, {location.district || location.block || 'Zone'}
+            </p>
           </div>
         </div>
       </div>
@@ -52,225 +131,227 @@ export default function Dashboard() {
       {/* KPI Section */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         {[
-          { label: 'Panchayats Covered', value: '128', icon: MapPin, color: 'text-blue-500', bg: 'bg-blue-50' },
-          { label: 'Blocks', value: '12', icon: Eye, color: 'text-indigo-500', bg: 'bg-indigo-50' },
-          { label: 'Forecast Resolution', value: '1 km', icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-50' },
-          { label: 'Forecast Accuracy', value: '92.4%', icon: Eye, color: 'text-emerald-500', bg: 'bg-emerald-50' },
-          { label: 'Active Alerts', value: '7', icon: AlertCircle, color: 'text-red-500', bg: 'bg-red-50' },
-          { label: 'Advisory Generated', value: '342', icon: CloudLightning, color: 'text-amber-500', bg: 'bg-amber-50' },
+          { label: 'Active Micro-Grid', value: `${location.name}`, icon: MapPin, color: 'text-blue-500', bg: 'bg-blue-50' },
+          { label: 'Coordinates', value: `${location.lat.toFixed(2)}°, ${location.lng.toFixed(2)}°`, icon: Eye, color: 'text-indigo-500', bg: 'bg-indigo-50' },
+          { label: 'Forecast Resolution', value: '1 km²', icon: TrendingUp, color: 'text-green-500', bg: 'bg-green-50' },
+          { label: 'Live Humidity', value: `${current?.humidity ?? 65}%`, icon: Droplets, color: 'text-emerald-500', bg: 'bg-emerald-50' },
+          { label: 'Surface Pressure', value: `${current?.pressure ?? 1012} hPa`, icon: Gauge, color: 'text-amber-500', bg: 'bg-amber-50' },
+          { label: 'Cloud Cover', value: `${current?.cloudCover ?? 20}%`, icon: CloudRain, color: 'text-cyan-500', bg: 'bg-cyan-50' },
         ].map((kpi, i) => (
           <div key={i} className="bg-white p-4 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center group hover:shadow-md transition-shadow">
             <div className={`${kpi.bg} p-3 rounded-full mb-3 group-hover:scale-110 transition-transform`}>
               <kpi.icon className={`w-6 h-6 ${kpi.color}`} />
             </div>
-            <p className="text-2xl font-bold text-slate-800">{kpi.value}</p>
-            <p className="text-xs text-slate-500 mt-1 font-medium">{kpi.label}</p>
+            <p className="text-lg font-bold text-slate-800 truncate max-w-full">{kpi.value}</p>
+            <p className="text-xs text-slate-500 mt-0.5 font-medium">{kpi.label}</p>
           </div>
         ))}
       </div>
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Current Weather Card */}
-        <div className="lg:col-span-1 bg-gradient-to-br from-primary to-emerald-700 rounded-3xl p-6 text-white shadow-lg shadow-primary/20 relative overflow-hidden">
-          <div className="absolute top-0 right-0 p-8 opacity-20">
-            <CloudLightning className="w-48 h-48" />
+        <div className="lg:col-span-1 bg-gradient-to-br from-primary via-emerald-700 to-teal-800 rounded-3xl p-6 text-white shadow-xl shadow-primary/20 relative overflow-hidden flex flex-col justify-between">
+          <div className="absolute top-0 right-0 p-6 opacity-15 pointer-events-none">
+            {renderWeatherIcon(current?.weatherCode, 'w-48 h-48')}
           </div>
           
           <div className="relative z-10">
-            <div className="flex justify-between items-start mb-8">
+            <div className="flex justify-between items-start mb-6">
               <div>
-                <p className="text-primary-foreground/80 font-medium">Current Weather</p>
-                <h2 className="text-3xl font-bold mt-1">Aima</h2>
+                <p className="text-primary-foreground/80 font-medium text-sm">Live Observation</p>
+                <h2 className="text-3xl font-bold mt-0.5">{location.name}</h2>
+                <p className="text-xs text-primary-foreground/70">
+                  Lat: {location.lat.toFixed(3)}° • Lon: {location.lng.toFixed(3)}°
+                </p>
               </div>
-              <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-sm font-medium">
-                Today
-              </div>
-            </div>
-
-            <div className="flex items-center gap-6 mb-8">
-              <div className="text-6xl font-bold tracking-tighter">29°</div>
-              <div className="text-primary-foreground/90 text-lg font-medium">
-                Partly Cloudy
-                <p className="text-sm font-normal text-primary-foreground/70">Feels like 32°</p>
+              <div className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider">
+                {current?.isDay ? 'Daytime' : 'Night'}
               </div>
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="flex items-center gap-5 mb-8">
+              <div className="text-6xl font-black tracking-tighter">
+                {current ? Math.round(current.temperature) : '--'}°C
+              </div>
+              <div className="text-primary-foreground/90 font-medium">
+                <p className="text-xl font-bold">{current?.weatherDescription || 'Clear'}</p>
+                <p className="text-sm text-primary-foreground/75 font-normal">
+                  Feels like {current ? Math.round(current.feelsLike) : '--'}°C
+                </p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-3">
               <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 flex items-center gap-3">
-                <Droplets className="w-5 h-5 text-emerald-200" />
+                <Droplets className="w-5 h-5 text-emerald-200 shrink-0" />
                 <div>
                   <p className="text-xs text-primary-foreground/70">Humidity</p>
-                  <p className="font-semibold">72%</p>
+                  <p className="font-bold text-base">{current?.humidity ?? '--'}%</p>
                 </div>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 flex items-center gap-3">
-                <Wind className="w-5 h-5 text-emerald-200" />
+                <Wind className="w-5 h-5 text-emerald-200 shrink-0" />
                 <div>
-                  <p className="text-xs text-primary-foreground/70">Wind</p>
-                  <p className="font-semibold">14 km/h</p>
+                  <p className="text-xs text-primary-foreground/70">Wind Speed</p>
+                  <p className="font-bold text-base">{current?.windSpeed ?? '--'} km/h</p>
                 </div>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 flex items-center gap-3">
-                <CloudRain className="w-5 h-5 text-emerald-200" />
+                <CloudRain className="w-5 h-5 text-emerald-200 shrink-0" />
                 <div>
-                  <p className="text-xs text-primary-foreground/70">Rainfall</p>
-                  <p className="font-semibold">4.2 mm</p>
+                  <p className="text-xs text-primary-foreground/70">Precipitation</p>
+                  <p className="font-bold text-base">{current?.rainfall ?? 0} mm</p>
                 </div>
               </div>
               <div className="bg-white/10 backdrop-blur-md rounded-2xl p-3 flex items-center gap-3">
-                <Thermometer className="w-5 h-5 text-emerald-200" />
+                <Thermometer className="w-5 h-5 text-emerald-200 shrink-0" />
                 <div>
-                  <p className="text-xs text-primary-foreground/70">Pressure</p>
-                  <p className="font-semibold">1008 hPa</p>
+                  <p className="text-xs text-primary-foreground/70">Air Pressure</p>
+                  <p className="font-bold text-base">{current?.pressure ?? 1012} hPa</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Downscale Visualization Preview */}
-        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col">
-          <div className="flex justify-between items-center mb-6">
-            <h3 className="text-lg font-bold text-slate-800">Forecast Transformation</h3>
-            <span className="bg-amber-100 text-amber-700 text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wide">
-              Downscale Demo
-            </span>
+        {/* Live Interactive Map Preview Card on Dashboard */}
+        <div className="lg:col-span-2 bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+          <div className="flex justify-between items-center mb-4">
+            <div>
+              <div className="flex items-center gap-2">
+                <h3 className="text-lg font-bold text-slate-800">Live Panchayat Weather Map</h3>
+                <span className="bg-emerald-100 text-emerald-700 text-[10px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider">
+                  OpenStreetMap Live
+                </span>
+              </div>
+              <p className="text-xs text-slate-500">Real-time geospatial telemetry for {location.name} (1km grid resolution)</p>
+            </div>
+            <Link
+              to="/map"
+              className="bg-primary/10 hover:bg-primary/20 text-primary px-3 py-1.5 rounded-xl text-xs font-bold transition-colors flex items-center gap-1.5"
+            >
+              <Layers className="w-3.5 h-3.5" />
+              <span>Full Screen Map</span>
+              <ArrowRight className="w-3 h-3" />
+            </Link>
           </div>
 
-          <div className="flex-1 flex flex-col md:flex-row items-center justify-between gap-6 relative">
-            {/* Block Level */}
-            <div className="flex-1 bg-slate-50 rounded-2xl p-5 border border-slate-200 w-full">
-              <div className="flex items-center gap-2 mb-3">
-                <MapPin className="w-4 h-4 text-slate-400" />
-                <h4 className="font-semibold text-slate-700">Block Forecast</h4>
-              </div>
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Resolution</span>
-                  <span className="font-medium">9x9 km</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Area Avg Temp</span>
-                  <span className="font-medium">31°C</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Area Avg Rain</span>
-                  <span className="font-medium">12 mm</span>
-                </div>
-              </div>
-              <div className="w-full aspect-square bg-slate-200 rounded-lg overflow-hidden grid grid-cols-3 grid-rows-3 gap-0.5">
-                {[...Array(9)].map((_, i) => (
-                  <div key={i} className="bg-blue-300/30 w-full h-full"></div>
-                ))}
-              </div>
-            </div>
+          {/* Interactive Leaflet Map Container */}
+          <div className="w-full h-72 rounded-2xl overflow-hidden border border-slate-200 relative shadow-inner">
+            <LeafletMap
+              center={[location.lat, location.lng]}
+              zoom={12}
+              markers={mapMarkers}
+              circles={mapCircles}
+              className="w-full h-full"
+              style={{ minHeight: '288px' }}
+            />
 
-            {/* AI Engine Arrow */}
-            <div className="flex flex-col items-center z-10 shrink-0">
-              <div className="bg-primary/10 p-3 rounded-full text-primary animate-pulse">
-                <Cpu className="w-6 h-6" />
-              </div>
-              <p className="text-xs font-bold text-primary mt-2">MausamSetu AI</p>
-              <div className="h-0.5 w-16 bg-gradient-to-r from-transparent via-primary to-transparent my-2 hidden md:block"></div>
-            </div>
-
-            {/* Panchayat Level */}
-            <div className="flex-1 bg-primary/5 rounded-2xl p-5 border border-primary/20 w-full shadow-[0_0_20px_rgba(20,184,101,0.1)]">
-              <div className="flex items-center gap-2 mb-3">
-                <MapPin className="w-4 h-4 text-primary" />
-                <h4 className="font-semibold text-primary">Panchayat Forecast</h4>
-              </div>
-              <div className="space-y-2 mb-4">
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Resolution</span>
-                  <span className="font-medium text-primary">1x1 km</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Local Temp</span>
-                  <span className="font-medium">29.8°C</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span className="text-slate-500">Local Rain</span>
-                  <span className="font-medium text-blue-600">17.4 mm</span>
-                </div>
-              </div>
-              <div className="w-full aspect-square bg-slate-200 rounded-lg overflow-hidden grid grid-cols-3 grid-rows-3 gap-0.5 relative">
-                {[...Array(9)].map((_, i) => (
-                  <div key={i} className={`w-full h-full ${i === 4 ? 'bg-blue-500 ring-2 ring-primary ring-inset z-10' : 'bg-blue-300/30'}`}></div>
-                ))}
-              </div>
+            {/* Quick Map Overlay Badge */}
+            <div className="absolute bottom-3 left-3 z-[400] bg-white/95 backdrop-blur-md px-3 py-1 rounded-xl shadow border border-slate-200 text-[11px] font-semibold text-slate-700 flex items-center gap-1.5 pointer-events-none">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              <span>GPS Grid: {location.lat.toFixed(3)}°N, {location.lng.toFixed(3)}°E</span>
             </div>
           </div>
         </div>
       </div>
 
       <div className="grid lg:grid-cols-2 gap-6">
-        {/* Today's Forecast Chart */}
+        {/* Today's 24-Hour Live Forecast Chart */}
         <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100">
-          <h3 className="text-lg font-bold text-slate-800 mb-6">Today's Weather Trend</h3>
+          <div className="flex justify-between items-center mb-6">
+            <div>
+              <h3 className="text-lg font-bold text-slate-800">24-Hour Live Weather Trend</h3>
+              <p className="text-xs text-slate-500">Hourly Temperature (°C) & Rainfall (mm)</p>
+            </div>
+            <div className="flex items-center gap-4 text-xs font-semibold">
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full bg-amber-500"></span>
+                <span>Temperature</span>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full bg-blue-500"></span>
+                <span>Rainfall (mm)</span>
+              </div>
+            </div>
+          </div>
+
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={forecastData} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
+              <AreaChart data={hourly} margin={{ top: 10, right: 10, left: -20, bottom: 0 }}>
                 <defs>
                   <linearGradient id="colorTemp" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#f59e0b" stopOpacity={0.7}/>
+                    <stop offset="95%" stopColor="#f59e0b" stopOpacity={0.05}/>
                   </linearGradient>
                   <linearGradient id="colorRain" x1="0" y1="0" x2="0" y2="1">
-                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.8}/>
-                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0}/>
+                    <stop offset="5%" stopColor="#3b82f6" stopOpacity={0.7}/>
+                    <stop offset="95%" stopColor="#3b82f6" stopOpacity={0.05}/>
                   </linearGradient>
                 </defs>
-                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 12, fill: '#64748b' }} />
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#e2e8f0" />
+                <XAxis dataKey="time" axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
+                <YAxis axisLine={false} tickLine={false} tick={{ fontSize: 11, fill: '#64748b' }} />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
                 <Tooltip 
-                  contentStyle={{ borderRadius: '12px', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
+                  content={({ active, payload, label }) => {
+                    if (active && payload && payload.length) {
+                      const data = payload[0].payload;
+                      return (
+                        <div className="bg-slate-900 text-white p-3 rounded-xl shadow-xl text-xs space-y-1">
+                          <p className="font-bold text-amber-400">{label} — {data.weatherDescription}</p>
+                          <p className="text-slate-200">Temp: <span className="font-bold text-white">{data.temp}°C</span></p>
+                          <p className="text-slate-200">Rain: <span className="font-bold text-blue-400">{data.rain} mm</span> ({data.rainProb}% prob)</p>
+                          <p className="text-slate-200">Wind: <span className="font-bold text-white">{data.windSpeed} km/h</span></p>
+                        </div>
+                      );
+                    }
+                    return null;
+                  }}
                 />
-                <Area type="monotone" dataKey="temp" stroke="#f59e0b" fillOpacity={1} fill="url(#colorTemp)" />
-                <Area type="monotone" dataKey="rain" stroke="#3b82f6" fillOpacity={1} fill="url(#colorRain)" />
+                <Area type="monotone" dataKey="temp" stroke="#f59e0b" strokeWidth={2.5} fillOpacity={1} fill="url(#colorTemp)" />
+                <Area type="monotone" dataKey="rain" stroke="#3b82f6" strokeWidth={2} fillOpacity={1} fill="url(#colorRain)" />
               </AreaChart>
             </ResponsiveContainer>
           </div>
         </div>
 
-        {/* Quick Advisory */}
-        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col justify-center">
-          <div className="flex items-center gap-3 mb-6">
-            <div className="bg-amber-100 p-3 rounded-full text-amber-600">
+        {/* Dynamic Agro-Advisory based on Live Readings */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 flex flex-col justify-between">
+          <div className="flex items-center gap-3 mb-4">
+            <div className={`p-3 rounded-2xl ${
+              primaryAdvisory?.status === 'warning' ? 'bg-amber-100 text-amber-600' :
+              primaryAdvisory?.status === 'danger' ? 'bg-red-100 text-red-600' :
+              'bg-emerald-100 text-emerald-600'
+            }`}>
               <CloudRain className="w-6 h-6" />
             </div>
             <div>
-              <h3 className="text-lg font-bold text-slate-800">Critical Advisory</h3>
-              <p className="text-sm text-slate-500">For Aima Panchayat</p>
+              <h3 className="text-lg font-bold text-slate-800">
+                {primaryAdvisory?.title || 'Live Agro-Meteorological Advisory'}
+              </h3>
+              <p className="text-xs text-slate-500">Automated AI Guidance for {location.name}</p>
             </div>
           </div>
           
-          <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200 mb-6">
-            <p className="text-slate-800 font-medium text-lg leading-relaxed">
-              "Moderate to heavy rainfall is expected within the next 24 hours. Local variations indicate up to 17.4 mm in this specific grid."
+          <div className="bg-slate-50 rounded-2xl p-4 border border-slate-200 mb-4">
+            <p className="text-slate-800 font-medium text-base leading-relaxed">
+              "{primaryAdvisory?.summary || 'Weather conditions are stable across this panchayat grid.'}"
             </p>
           </div>
           
-          <div className="space-y-3">
-            <div className="flex items-start gap-3">
-              <div className="mt-1 bg-green-100 text-green-600 rounded-full p-1">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
+          <div className="space-y-2.5">
+            {(primaryAdvisory?.details || [
+              'Continue scheduled seasonal agricultural operations.',
+              'Monitor morning soil moisture before irrigating.',
+              'Check for regular pest presence on crop leaves.'
+            ]).map((action, i) => (
+              <div key={i} className="flex items-start gap-3">
+                <div className="mt-0.5 bg-emerald-100 text-emerald-600 rounded-full p-1 shrink-0">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                </div>
+                <p className="text-slate-700 text-sm font-medium">{action}</p>
               </div>
-              <p className="text-slate-700 font-medium">Delay irrigation for the next 48 hours</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="mt-1 bg-green-100 text-green-600 rounded-full p-1">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-              </div>
-              <p className="text-slate-700 font-medium">Avoid pesticide spraying today</p>
-            </div>
-            <div className="flex items-start gap-3">
-              <div className="mt-1 bg-green-100 text-green-600 rounded-full p-1">
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" /></svg>
-              </div>
-              <p className="text-slate-700 font-medium">Ensure drainage channels are clear</p>
-            </div>
+            ))}
           </div>
         </div>
       </div>
