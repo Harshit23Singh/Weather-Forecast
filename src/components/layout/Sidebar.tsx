@@ -86,15 +86,15 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
       </div>
       
       <div className="p-4 border-t border-slate-100 shrink-0 space-y-2">
-        <div className="bg-slate-900 text-white rounded-2xl p-3 border border-slate-800 space-y-1.5 shadow-sm">
+        <div className="bg-emerald-50/70 text-slate-800 rounded-2xl p-3 border border-emerald-200/80 space-y-1.5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">Autonomous Agent</span>
-            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-400 bg-emerald-950/80 px-2 py-0.5 rounded-full border border-emerald-500/30">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+            <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider">Autonomous Agent</span>
+            <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               24/7 ACTIVE
             </span>
           </div>
-          <p className="text-[11px] text-slate-300 leading-tight">
+          <p className="text-[11px] text-slate-600 leading-tight">
             Self-Supervising Agro-Sentinel auto-dispatching alerts.
           </p>
         </div>

@@ -216,23 +216,21 @@ export default function RiskAlerts() {
       </div>
 
       {/* Autonomous Agent Sentinel Banner */}
-      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-3xl p-6 text-white shadow-xl border border-indigo-500/20 relative overflow-hidden">
-        <div className="absolute right-0 top-0 translate-x-10 -translate-y-10 w-64 h-64 bg-primary/20 rounded-full blur-3xl pointer-events-none"></div>
-
+      <div className="bg-white rounded-3xl p-6 shadow-sm border border-emerald-200/80 relative overflow-hidden">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start gap-4">
-            <div className="bg-emerald-500/20 text-emerald-400 p-3.5 rounded-2xl border border-emerald-500/30 shrink-0">
+            <div className="bg-emerald-50 text-emerald-600 p-3.5 rounded-2xl border border-emerald-200 shrink-0">
               <Bot className="w-7 h-7" />
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2.5">
-                <h3 className="font-bold text-lg text-white">Autonomous Agro-Sentinel System</h3>
-                <span className="inline-flex items-center gap-1.5 bg-emerald-500/20 text-emerald-400 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border border-emerald-500/30">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <h3 className="font-bold text-lg text-slate-800">Autonomous Agro-Sentinel System</h3>
+                <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border border-emerald-300">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
                   Self-Supervising • 24/7 Active
                 </span>
               </div>
-              <p className="text-slate-300 text-xs md:text-sm max-w-2xl leading-relaxed">
+              <p className="text-slate-600 text-xs md:text-sm max-w-2xl leading-relaxed">
                 Operating fully autonomously without human intervention. The engine continuously runs 1km micro-climate scans, detects biophysical stress thresholds, and dispatches localized alerts to registered farmers and KVK officers.
               </p>
             </div>
@@ -240,7 +238,7 @@ export default function RiskAlerts() {
 
           <button 
             onClick={handleTriggerAutonomousDispatch}
-            className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-2xl transition-all whitespace-nowrap shadow-lg shadow-primary/30 flex items-center gap-2 text-sm active:scale-95 shrink-0"
+            className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-2xl transition-all whitespace-nowrap shadow-lg shadow-primary/20 flex items-center gap-2 text-sm active:scale-95 shrink-0"
           >
             <Radio className="w-4 h-4 animate-pulse" />
             <span>Trigger Agentic Dispatch</span>
@@ -248,12 +246,12 @@ export default function RiskAlerts() {
         </div>
 
         {/* Live Agent Logs Feed */}
-        <div className="mt-6 pt-4 border-t border-white/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-slate-400">
+        <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-slate-500">
           <div className="flex items-center gap-2">
-            <Activity className="w-3.5 h-3.5 text-emerald-400" />
-            <span className="font-semibold text-slate-300">Live Sentinel Activity Stream:</span>
+            <Activity className="w-3.5 h-3.5 text-emerald-600" />
+            <span className="font-semibold text-slate-700">Live Sentinel Activity Stream:</span>
           </div>
-          <div className="font-mono text-[11px] text-emerald-300/90 truncate max-w-xl">
+          <div className="font-mono text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/60 truncate max-w-xl">
             [{agentLogs[0]?.time}] {agentLogs[0]?.message}
           </div>
         </div>
@@ -271,7 +269,7 @@ export default function RiskAlerts() {
             onClick={() => setFilter(f)}
             className={`px-4 py-2 rounded-2xl text-xs font-bold transition-all whitespace-nowrap ${
               filter === f 
-                ? 'bg-slate-900 text-white shadow-sm' 
+                ? 'bg-primary text-white shadow-sm' 
                 : 'bg-white border border-slate-200 text-slate-600 hover:bg-slate-50'
             }`}
           >
@@ -426,7 +424,7 @@ export default function RiskAlerts() {
 
             <button
               onClick={() => setIsDispatchModalOpen(false)}
-              className="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3 rounded-2xl text-sm transition-all"
+              className="w-full bg-primary hover:bg-primary/90 text-white font-bold py-3 rounded-2xl text-sm transition-all shadow-md shadow-primary/20"
             >
               {dispatchStep >= 4 ? 'Close Window' : 'Running in Background...'}
             </button>
