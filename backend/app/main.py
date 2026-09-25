@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from app.core.config import settings
-from app.api.v1.endpoints import health, weather, locations, ml_inference, advisory, sms_dispatch
+from app.api.v1.endpoints import health, weather, locations, ml_inference, advisory, sms_dispatch, gis_export
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("gram_mausam_ai")
@@ -44,6 +44,7 @@ app.include_router(locations.router, prefix=f"{settings.API_V1_STR}/locations", 
 app.include_router(ml_inference.router, prefix=f"{settings.API_V1_STR}/ml", tags=["Machine Learning Inference"])
 app.include_router(advisory.router, prefix=f"{settings.API_V1_STR}/advisory", tags=["Agro-Meteorological Advisory"])
 app.include_router(sms_dispatch.router, prefix=f"{settings.API_V1_STR}/sms", tags=["Kisan SMS Gateway Dispatch"])
+app.include_router(gis_export.router, prefix=f"{settings.API_V1_STR}/gis", tags=["GIS & GeoJSON Interoperability"])
 
 
 @app.get("/")
