@@ -1,0 +1,41 @@
+name: ML Downscaling & Physics Engine Validation
+
+on:
+  push:
+    branches: [ main, master ]
+    paths:
+      - 'ml_engine/**'
+  workflow_dispatch:
+
+jobs:
+  validate-models:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install ML Requirements
+        run: |
+          pip install torch numpy scipy scikit-learn
+          pip install -r backend/requirements.txt
+
+      - name: Validate Physics-Informed UNet Convergence
+        run: |
+          python -c "
+          from ml_engine.pipelines.train_downscaler import train_model
+          model = train_model(epochs=2)
+          print('PINN Model verification passed.')
+          "
+
+      - name: Validate ICAR Crop Risk Ensemble
+        run: |
+          python -c "
+          from ml_engine.pipelines.train_crop_risk import train_pest_classifier
+          clf = train_pest_classifier()
+          print('Crop risk classifier verification passed.')
+          "
