@@ -88,14 +88,14 @@ export default function Sidebar({ isMobile = false, onClose }: SidebarProps) {
       <div className="p-4 border-t border-slate-100 shrink-0 space-y-2">
         <div className="bg-emerald-50/70 text-slate-800 rounded-2xl p-3 border border-emerald-200/80 space-y-1.5 shadow-sm">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider">Autonomous Agent</span>
+            <span className="text-[10px] uppercase font-bold text-emerald-800 tracking-wider">Automated Monitoring</span>
             <span className="inline-flex items-center gap-1 text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded-full border border-emerald-300">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
               24/7 ACTIVE
             </span>
           </div>
           <p className="text-[11px] text-slate-600 leading-tight">
-            Self-Supervising Agro-Sentinel auto-dispatching alerts.
+            Continuous 1km Grid Analysis with automated farmer alerts.
           </p>
         </div>
 

@@ -39,13 +39,13 @@ export default function RiskAlerts() {
       id: 'log-1',
       time: '03:10:14',
       type: 'scan',
-      message: `Autonomous Sentinel scanned 1km micro-grid for ${location.name} Panchayat.`
+      message: `Automated 1km micro-grid analysis completed for ${location.name} Panchayat.`
     },
     {
       id: 'log-2',
       time: '03:10:45',
       type: 'eval',
-      message: 'Cross-verified ICAR-CRIDA biophysical thresholds: No human supervision needed.'
+      message: 'Cross-verified ICAR-CRIDA biophysical thresholds: Zero manual supervision required.'
     },
     {
       id: 'log-3',
@@ -145,15 +145,15 @@ export default function RiskAlerts() {
     });
   }
 
-  // Agent periodic heartbeat simulation
+  // Automated periodic diagnostic scan simulation
   useEffect(() => {
     const interval = setInterval(() => {
       const now = new Date();
       const timeStr = now.toTimeString().split(' ')[0];
       const actions = [
-        `Agent evaluated 1km grid (${location.lat.toFixed(2)}°N, ${location.lng.toFixed(2)}°E): All parameters within active envelope.`,
-        `Autonomous loop verified: Subscribed smallholder channels active (1,284 farmers).`,
-        `Sync with State Agri-Climatic Grid verified (0.18s latency). Zero supervisor intervention required.`
+        `Continuous 1km Grid Analysis verified for (${location.lat.toFixed(2)}°N, ${location.lng.toFixed(2)}°E): All parameters within agronomic safety envelope.`,
+        `Automated advisory channels active: 1,284 registered smallholders synchronized via Kisan SMS Gateway.`,
+        `Telemetry synchronized with National Agromet Data Grid (0.18s latency). Zero manual supervision required.`
       ];
       const randomAction = actions[Math.floor(Math.random() * actions.length)];
       setAgentLogs(prev => [
@@ -180,7 +180,7 @@ export default function RiskAlerts() {
           id: `log-${Date.now()}`,
           time: timeStr,
           type: 'dispatch',
-          message: `Autonomous broadcast completed for ${location.name} Panchayat: 1,284 recipients reached via Kisan SMS Gateway.`
+          message: `Automated broadcast completed for ${location.name} Panchayat: 1,284 recipients reached via Kisan SMS Gateway.`
         },
         ...prev.slice(0, 5)
       ]);
@@ -215,7 +215,7 @@ export default function RiskAlerts() {
         </div>
       </div>
 
-      {/* Autonomous Agent Sentinel Banner */}
+      {/* Automated Panchayat Weather Monitoring Banner */}
       <div className="bg-white rounded-3xl p-6 shadow-sm border border-emerald-200/80 relative overflow-hidden">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6 relative z-10">
           <div className="flex items-start gap-4">
@@ -224,14 +224,14 @@ export default function RiskAlerts() {
             </div>
             <div className="space-y-1">
               <div className="flex items-center gap-2.5">
-                <h3 className="font-bold text-lg text-slate-800">Autonomous Agro-Sentinel System</h3>
+                <h3 className="font-bold text-lg text-slate-800">Automated Panchayat Weather Monitoring</h3>
                 <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold uppercase tracking-wider px-2.5 py-0.5 rounded-full border border-emerald-300">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-                  Self-Supervising • 24/7 Active
+                  Continuous 1km Grid Analysis • 24/7 Active
                 </span>
               </div>
               <p className="text-slate-600 text-xs md:text-sm max-w-2xl leading-relaxed">
-                Operating fully autonomously without human intervention. The engine continuously runs 1km micro-climate scans, detects biophysical stress thresholds, and dispatches localized alerts to registered farmers and KVK officers.
+                Automated agro-meteorological monitoring operating with zero manual supervision required. The system continuously evaluates 1km grid telemetry against ICAR-CRIDA crop safety thresholds and dispatches localized advisory alerts to registered farmers and KVK extension officers.
               </p>
             </div>
           </div>
@@ -241,15 +241,15 @@ export default function RiskAlerts() {
             className="bg-primary hover:bg-primary/90 text-white font-bold px-6 py-3 rounded-2xl transition-all whitespace-nowrap shadow-lg shadow-primary/20 flex items-center gap-2 text-sm active:scale-95 shrink-0"
           >
             <Radio className="w-4 h-4 animate-pulse" />
-            <span>Trigger Agentic Dispatch</span>
+            <span>Trigger Automated Broadcast</span>
           </button>
         </div>
 
-        {/* Live Agent Logs Feed */}
+        {/* Live Diagnostic Feed */}
         <div className="mt-6 pt-4 border-t border-slate-100 flex flex-col md:flex-row items-start md:items-center justify-between gap-3 text-xs text-slate-500">
           <div className="flex items-center gap-2">
             <Activity className="w-3.5 h-3.5 text-emerald-600" />
-            <span className="font-semibold text-slate-700">Live Sentinel Activity Stream:</span>
+            <span className="font-semibold text-slate-700">Live Diagnostic Feed:</span>
           </div>
           <div className="font-mono text-[11px] text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200/60 truncate max-w-xl">
             [{agentLogs[0]?.time}] {agentLogs[0]?.message}
@@ -327,7 +327,7 @@ export default function RiskAlerts() {
             </div>
 
             <div className="bg-primary/5 p-3 rounded-xl border border-primary/20 text-xs text-slate-700">
-              <strong className="text-primary font-bold block mb-0.5">Autonomous Action Directive:</strong>
+              <strong className="text-primary font-bold block mb-0.5">Recommended Field Action:</strong>
               {alert.action}
             </div>
           </div>
@@ -338,7 +338,7 @@ export default function RiskAlerts() {
             </div>
             <h3 className="text-xl font-bold text-slate-800">Normal Conditions Across 1km Grid</h3>
             <p className="text-slate-500 text-sm max-w-md mx-auto">
-              No active weather hazards triggered for <strong className="text-slate-700">{location.name}</strong>. The autonomous sentinel is continuously monitoring 1km micro-grid telemetry in the background.
+              No active weather hazards triggered for <strong className="text-slate-700">{location.name}</strong>. Automated 1km grid analysis is actively monitoring agro-meteorological telemetry in the background.
             </p>
           </div>
         )}
@@ -360,8 +360,8 @@ export default function RiskAlerts() {
                 <Radio className="w-6 h-6 animate-pulse" />
               </div>
               <div>
-                <h3 className="text-lg font-bold text-slate-800">Autonomous Broadcast Pipeline</h3>
-                <p className="text-xs text-slate-500">Kisan SMS Gateway & WhatsApp Cloud API</p>
+                <h3 className="text-lg font-bold text-slate-800">Automated Agro-Advisory Broadcast Pipeline</h3>
+                <p className="text-xs text-slate-500">Kisan SMS Gateway (mKisan) & WhatsApp Business API</p>
               </div>
             </div>
 
@@ -374,7 +374,7 @@ export default function RiskAlerts() {
                   {dispatchStep > 1 ? <CheckCheck className="w-4 h-4" /> : <Activity className="w-4 h-4 animate-spin" />}
                 </div>
                 <div className="text-xs">
-                  <p className="font-bold text-slate-800">1. Spatial Grid Ingestion & Diagnostic Check</p>
+                  <p className="font-bold text-slate-800">1. Continuous 1km Grid Analysis & Diagnostic Check</p>
                   <p className="text-slate-500">Evaluated 1km micro-grid for {location.name} ({location.lat.toFixed(3)}°N, {location.lng.toFixed(3)}°E).</p>
                 </div>
               </div>
@@ -387,8 +387,8 @@ export default function RiskAlerts() {
                   {dispatchStep > 2 ? <CheckCheck className="w-4 h-4" /> : <Sparkles className="w-4 h-4 animate-spin" />}
                 </div>
                 <div className="text-xs">
-                  <p className="font-bold text-slate-800">2. Autonomous Agro-Advisory Synthesis</p>
-                  <p className="text-slate-500">Formulated bilingual (Hindi/English) spray and irrigation advisories.</p>
+                  <p className="font-bold text-slate-800">2. Automated Agro-Advisory Formulation</p>
+                  <p className="text-slate-500">Formulated bilingual (Hindi/English) spray and irrigation advisories per ICAR standards.</p>
                 </div>
               </div>
 
@@ -401,7 +401,7 @@ export default function RiskAlerts() {
                 </div>
                 <div className="text-xs">
                   <p className="font-bold text-slate-800">3. Multi-Channel Gateway Transmission</p>
-                  <p className="text-slate-500">Streaming to 1,284 registered smallholders, Gram Pradhans & KVK officers.</p>
+                  <p className="text-slate-500">Transmitting to 1,284 registered smallholders, Gram Pradhans & KVK officers.</p>
                 </div>
               </div>
 
@@ -410,7 +410,7 @@ export default function RiskAlerts() {
                 <div className="bg-emerald-50 border border-emerald-200 p-4 rounded-2xl space-y-2">
                   <div className="flex items-center gap-2 text-emerald-800 font-bold text-sm">
                     <CheckCircle2 className="w-5 h-5 text-emerald-600" />
-                    <span>Autonomous Dispatch Successfully Broadcasted!</span>
+                    <span>Automated Advisory Broadcast Successfully Dispatched!</span>
                   </div>
                   <div className="grid grid-cols-2 gap-2 text-[11px] text-emerald-900/80">
                     <div><strong>Gateway Token:</strong> MSG-IN-98214</div>

@@ -130,23 +130,23 @@ export default function Dashboard() {
         </div>
       </div>
 
-      {/* Autonomous Sentinel Notification Bar */}
+      {/* Automated Panchayat Weather Monitoring Bar */}
       <div className="bg-white rounded-2xl p-3.5 text-slate-800 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-sm border border-emerald-200/80 text-xs">
         <div className="flex items-center gap-2.5">
           <div className="bg-emerald-50 text-emerald-600 p-1.5 rounded-lg border border-emerald-200">
             <Bot className="w-4 h-4" />
           </div>
           <div>
-            <span className="font-bold text-slate-900">Autonomous Agro-Sentinel Loop: </span>
-            <span className="text-slate-600">Continuous 1km micro-grid monitoring active. Zero manual supervision required.</span>
+            <span className="font-bold text-slate-900">Automated Panchayat Weather Monitoring: </span>
+            <span className="text-slate-600">Continuous 1km Grid Analysis active. Zero manual supervision required.</span>
           </div>
         </div>
         <Link 
           to="/alerts" 
-          className="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-3 py-1.5 rounded-xl border border-emerald-200 transition-colors whitespace-nowrap"
+          className="inline-flex items-center gap-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold px-3.5 py-1.5 rounded-xl border border-emerald-200 transition-colors whitespace-nowrap"
         >
           <Radio className="w-3.5 h-3.5 text-emerald-600 animate-pulse" />
-          <span>View Sentinel Stream</span>
+          <span>Monitor Panchayat Forecast</span>
           <ArrowRight className="w-3 h-3 text-emerald-600" />
         </Link>
       </div>
