@@ -15,7 +15,9 @@ import {
   RefreshCw,
   Gauge,
   ArrowRight,
-  Layers
+  Layers,
+  Bot,
+  Radio
 } from 'lucide-react';
 import { 
   AreaChart, 
@@ -126,6 +128,27 @@ export default function Dashboard() {
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Autonomous Sentinel Notification Bar */}
+      <div className="bg-gradient-to-r from-slate-900 via-indigo-950 to-slate-900 rounded-2xl p-3.5 text-white flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 shadow-md border border-indigo-500/20 text-xs">
+        <div className="flex items-center gap-2.5">
+          <div className="bg-emerald-500/20 text-emerald-400 p-1.5 rounded-lg border border-emerald-500/30">
+            <Bot className="w-4 h-4" />
+          </div>
+          <div>
+            <span className="font-bold text-slate-100">Autonomous Agro-Sentinel Loop: </span>
+            <span className="text-slate-300">Continuous 1km micro-grid monitoring active. Zero manual supervision required.</span>
+          </div>
+        </div>
+        <Link 
+          to="/alerts" 
+          className="inline-flex items-center gap-1.5 bg-primary/20 hover:bg-primary/30 text-emerald-300 font-bold px-3 py-1.5 rounded-xl border border-primary/30 transition-colors whitespace-nowrap"
+        >
+          <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+          <span>View Sentinel Stream</span>
+          <ArrowRight className="w-3 h-3 text-emerald-300" />
+        </Link>
       </div>
 
       {/* KPI Section */}

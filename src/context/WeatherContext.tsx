@@ -79,7 +79,7 @@ export const WeatherProvider: React.FC<{ children: React.ReactNode }> = ({ child
 
   const detectUserLocation = async () => {
     if (!navigator.geolocation) {
-      alert('Geolocation is not supported by your browser.');
+      console.warn('Geolocation is not supported by your browser environment.');
       return;
     }
     setIsLocating(true);
@@ -100,7 +100,6 @@ export const WeatherProvider: React.FC<{ children: React.ReactNode }> = ({ child
       (err) => {
         console.warn('Geolocation error:', err);
         setIsLocating(false);
-        alert('Could not determine your GPS location. Please ensure location permission is allowed.');
       },
       { timeout: 10000, enableHighAccuracy: true }
     );
