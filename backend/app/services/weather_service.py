@@ -2,6 +2,7 @@ import httpx
 from typing import Dict, Any
 import logging
 from app.core.config import settings
+from app.core.redis_cache import geospatial_cache
 
 logger = logging.getLogger("gram_mausam_ai.weather_service")
 
@@ -13,7 +14,11 @@ class WeatherService:
         self.base_url = settings.OPEN_METEO_BASE_URL
 
     async def get_forecast(self, latitude: float, longitude: float) -> Dict[str, Any]:
-        """Fetch synoptic real-time and 7-day forecast grid."""
+        """Fetch synoptic real-time and 7-day forecast grid with caching."""
+        # Check cache first
+        cached = await geospatial_cache.get(latitude, longitude)
+        if cached:
+            return cached
         params = {
             "latitude": latitude,
             "longitude": longitude,
@@ -80,7 +85,7 @@ class WeatherService:
                     "soil_moisture_0_to_1cm": curr.get("soil_moisture_0_to_1cm", 0.32),
                 }
 
-                return {
+                result = {
                     "latitude": data.get("latitude", latitude),
                     "longitude": data.get("longitude", longitude),
                     "elevation": data.get("elevation", 250.0),
@@ -89,6 +94,8 @@ class WeatherService:
                     "hourly": data.get("hourly", {}),
                     "daily": data.get("daily", {})
                 }
+                await geospatial_cache.set(latitude, longitude, result)
+                return result
             except Exception as e:
                 logger.error(f"Error fetching Open-Meteo telemetry: {e}")
                 raise e
