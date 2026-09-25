@@ -4,7 +4,7 @@ from contextlib import asynccontextmanager
 import logging
 
 from app.core.config import settings
-from app.api.v1.endpoints import health, weather
+from app.api.v1.endpoints import health, weather, locations
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger("gram_mausam_ai")
@@ -40,6 +40,7 @@ app.add_middleware(
 # Include Routers
 app.include_router(health.router, prefix=settings.API_V1_STR, tags=["Diagnostics"])
 app.include_router(weather.router, prefix=f"{settings.API_V1_STR}/weather", tags=["Weather Telemetry"])
+app.include_router(locations.router, prefix=f"{settings.API_V1_STR}/locations", tags=["Geospatial Panchayat Registry"])
 
 
 @app.get("/")
