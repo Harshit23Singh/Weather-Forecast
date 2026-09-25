@@ -1,0 +1,55 @@
+version: '3.8'
+
+services:
+  # Gram Mausam AI - FastAPI & ML Engine
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: gram_mausam_backend
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      - DEBUG=False
+      - ENABLE_REDIS_CACHE=True
+      - REDIS_URL=redis://redis_cache:6379/0
+    depends_on:
+      - redis_cache
+    networks:
+      - gram_mausam_net
+
+  # High-Performance Geospatial Cache
+  redis_cache:
+    image: redis:7.2-alpine
+    container_name: gram_mausam_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - gram_mausam_net
+
+  # Frontend Web Client
+  frontend:
+    image: node:20-alpine
+    container_name: gram_mausam_frontend
+    working_dir: /app
+    volumes:
+      - ./:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    command: sh -c "npm install && npm run dev -- --host"
+    depends_on:
+      - backend
+    networks:
+      - gram_mausam_net
+
+networks:
+  gram_mausam_net:
+    driver: bridge
+
+volumes:
+  redis_data:
